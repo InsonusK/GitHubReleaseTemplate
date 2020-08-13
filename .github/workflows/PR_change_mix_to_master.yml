@@ -8,7 +8,7 @@ on:
       - 'src/**'
 
 jobs:
-  tests:
+  check_pr_mix:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
