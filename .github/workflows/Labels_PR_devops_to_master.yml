@@ -1,34 +1,39 @@
-name: Check only code change doesn't mixed with devops changes
+name: Pull request of code to master
 
 on:
   pull_request:
     branches: master
-    types: [opened, synchronize, reopened, labeled, unlabeled]
+    types: [opened, synchronize, reopened, labeled]
     paths-ignore:
-      - 'src/**'
+    - 'src/**'
 
 jobs:
-  check_pr_mix:
+  label:
+    name: "Check labels"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: dorny/paths-filter@v2.2.0
         id: filter
         with:
-          # inline YAML or path to separate file (e.g.: .github/filters.yaml)
           filters: |
             code:
               - 'src/**'
-      - name: Error Not Only Devops
+      - name: Check label devops setted
         if: steps.filter.outputs.code == 'false'
         uses: mheap/github-action-required-labels@v1
         with:
           mode: exactly
           count: 1
           labels: "devops"
-      - name: Only devops
+      - name: Not only devops chech
         if: steps.filter.outputs.code == 'true'
         run: |
           echo "Mixing code changes and devops chenges"
           exit 4
-
+      - name: Check code changing labels not setted
+        uses: mheap/github-action-required-labels@v1
+        with:
+          mode: exactly
+          count: 0
+          labels: "patch, minor, major"

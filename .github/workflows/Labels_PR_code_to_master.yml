@@ -1,4 +1,4 @@
-name: Pull request of code to master
+name: Labels of pull request of code to master
 
 on:
   pull_request:
@@ -17,3 +17,9 @@ jobs:
           mode: exactly
           count: 1
           labels: "patch, minor, major"
+      - name: Check devops changing labels not setted
+        uses: mheap/github-action-required-labels@v1
+        with:
+          mode: exactly
+          count: 0
+          labels: "devops"
