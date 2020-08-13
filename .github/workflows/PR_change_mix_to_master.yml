@@ -1,0 +1,33 @@
+name: Check only code change doesn't mixed with devops changes
+
+on:
+  pull_request:
+    branches: master
+    paths-ignore:
+      - 'src/**'
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dorny/paths-filter@v2.2.0
+        id: filter
+        with:
+          # inline YAML or path to separate file (e.g.: .github/filters.yaml)
+          filters: |
+            code:
+              - 'src/**'
+      - name: Only devops
+        if: steps.filter.outputs.code == 'false'
+        uses: mheap/github-action-required-labels@v1
+        with:
+          mode: exactly
+          count: 1
+          labels: "devops"
+      - name: Only devops
+        if: steps.filter.outputs.code == 'true'
+        run: |
+          echo "Mixing code changes and devops chenges"
+          exit 4
+
