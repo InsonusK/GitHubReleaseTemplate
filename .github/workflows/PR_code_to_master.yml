@@ -1,4 +1,4 @@
-Name: Pull request of code to master
+name: Pull request of code to master
 
 on:
   pull_request:
