@@ -19,7 +19,7 @@ jobs:
           filters: |
             code:
               - 'src/**'
-      - name: Only devops
+      - name: Error Not Only Devops
         if: steps.filter.outputs.code == 'false'
         uses: mheap/github-action-required-labels@v1
         with:
