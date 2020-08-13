@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: master
     types: [opened, synchronize, reopened, labeled]
-    paths:
+    paths-ignore:
     - 'src/**'
 
 jobs:
@@ -15,5 +15,5 @@ jobs:
       - uses: mheap/github-action-required-labels@v1
         with:
           mode: exactly
-          count: 1
+          count: 0
           labels: "patch, minor, major"
