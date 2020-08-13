@@ -3,6 +3,7 @@ Name: Pull request of code to master
 on:
   pull_request:
     branches: master
+    types: [opened, synchronize, reopened, labeled]
     paths:
     - 'src/**'
 
