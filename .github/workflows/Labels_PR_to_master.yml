@@ -1,0 +1,45 @@
+name: Check labels of PR to master
+
+on:
+  pull_request:
+    branches: master
+    types: [opened, synchronize, reopened, labeled]
+
+jobs:
+  label:
+    name: "Check labels"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dorny/paths-filter@v2.2.0
+        id: filter
+        with:
+          # inline YAML or path to separate file (e.g.: .github/filters.yaml)
+          filters: |
+            code:
+              - 'src/**'
+            non_code:
+              - '!src/**'
+      - name: Throw error code and non code changed
+        if: steps.filter.outputs.code == 'true' && steps.filter.outputs.non_code == 'true'
+        run: |
+          echo "Mixing code changes and devops chenges"
+          exit 4
+      - name: Throw error changed folders doesn't defined
+        if: steps.filter.outputs.code == 'false' && steps.filter.outputs.non_code == 'false'
+        run: |
+          echo "Changed folders doesn't defined"
+          exit 4
+      - name: Check devops label setted for non code changes
+        if: steps.filter.outputs.non_code == 'true'
+        uses: mheap/github-action-required-labels@v1
+        with:
+          mode: exactly
+          count: 1
+          labels: "devops"
+      - name: Check code label setted for code changes
+        if: steps.filter.outputs.code == 'true'
+        uses: mheap/github-action-required-labels@v1
+        with:
+          mode: exactly
+          count: 1
+          labels: "patch, minor, major"
