@@ -23,6 +23,8 @@ version-resolver:
   patch:
     labels:
       - 'patch'
+exclude-labels:
+  - 'devops'
 template: |
   ## Changes
 
