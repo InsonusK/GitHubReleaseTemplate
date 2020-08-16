@@ -4,6 +4,6 @@ namespace SomeAwesomeProject
 {
     public class Class1
     {
-        private int Value = 3;
+        private int Value = 30;
     }
 }
