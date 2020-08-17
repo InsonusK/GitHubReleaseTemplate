@@ -26,6 +26,7 @@ version-resolver:
 exclude-labels:
   - 'devops'
 template: |
-  ## Changes
-
+  <details>
+  <summary><b>Changes</b></summary>
   $CHANGES
+  </details>
