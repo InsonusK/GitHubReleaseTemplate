@@ -21,6 +21,9 @@ jobs:
           draft_version=${{ steps.release.outputs.tag_name }}
           echo ${draft_version}
           echo '::set-env name=DRAFT_VERSION::'${draft_version:1}
+      - name: "Print new release version(env)"
+        run: |
+          echo "${{ env.DRAFT_VERSION }}"
       - uses: actions/checkout@v2
       - name: "Get current version of package"
         run: |
