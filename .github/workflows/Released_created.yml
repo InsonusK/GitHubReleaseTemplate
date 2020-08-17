@@ -1,7 +1,0 @@
-name: Publish drafted release
-
-on:
-  release:
-    types: created
-
-
