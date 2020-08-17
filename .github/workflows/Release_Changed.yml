@@ -1,0 +1,83 @@
+name: Try publish release
+on:
+  release:
+    types: edited
+
+jobs:
+  print_info:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Release info print"
+        run: |
+          echo "is draft ${{ github.event.release.draft }}"
+          echo "tag: ${{ github.event.release.tag_name }}"
+  check_draft:
+    if: ${{ github.event.release.draft == 'true' && github.event.release.tag_name != *"-a" }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: "Get current version of package"
+        run: |
+          file=`cat src/SomeAwesomeProject/SomeAwesomeProject.csproj`
+          version=$(grep -oPm1 "(?<=<PackageVersion>)[^<]+" <<< $file)
+          version=v${version}
+          echo $version
+          echo '::set-env name=VERSION::'${version}
+      - name: "Print current version"
+        run: |
+          echo "${{ env.VERSION }}"
+      - uses: Thog/action-equals@v1
+        with:
+          a: ${{ env.VERSION }}
+          b: ${{ github.event.release.tag_name }}
+  build:
+    needs: check_draft
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    container: mcr.microsoft.com/dotnet/core/sdk:3.1
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Pack with dotnet
+        run: dotnet pack src/SomeAwesomeProject/SomeAwesomeProject.csproj --output nuget-packages --configuration Release
+      - name: check folder content
+        run: ls
+      - name: check folder content
+        run: |
+          cd nuget-packages
+          ls
+      - name: Upload nupkg
+        uses: actions/upload-artifact@v2
+        with:
+          name: nupkg
+          path: nuget-packages/*.nupkg
+          if-no-files-found: error
+
+  push:
+    runs-on: ubuntu-latest
+    needs: build
+    defaults:
+      run:
+        shell: bash
+
+    container: mcr.microsoft.com/dotnet/core/sdk:3.1
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download nupkg from build
+        uses: actions/download-artifact@v2
+        with:
+          name: nupkg
+          path: nuget-packages
+      - name: ls folder
+        run: ls
+      - name: add github repo use secrets.GITHUB_TOKEN (equal to github.token)
+        run: dotnet nuget add source https://nuget.pkg.github.com/${{github.repository_owner}}/index.json --name github --username ${{github.repository_owner}} --password ${{secrets.GITHUB_TOKEN}} --store-password-in-clear-text
+      - name: Push with dotnet
+        run: dotnet nuget push nuget-packages/*.nupkg --source github --no-symbols true --skip-duplicate
+
+

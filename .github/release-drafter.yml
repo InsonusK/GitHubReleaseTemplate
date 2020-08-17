@@ -1,5 +1,5 @@
 name-template: 'v$RESOLVED_VERSION 🌈'
-tag-template: 'v$RESOLVED_VERSION'
+tag-template: 'v$RESOLVED_VERSION-a'
 categories:
   - title: '🚀 Features'
     labels:
@@ -28,5 +28,7 @@ exclude-labels:
 template: |
   <details>
   <summary><b>Changes</b></summary>
+
   $CHANGES
+
   </details>
