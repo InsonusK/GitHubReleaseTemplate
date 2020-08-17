@@ -17,7 +17,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: "Print new release version"
         run: |
-          echo "${{ steps.release.outputs.code }}"
+          echo "${{ steps.release.outputs.tag_name }}"
       - uses: actions/checkout@v2
       - name: "Get current version of package"
         run: |
