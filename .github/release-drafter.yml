@@ -28,5 +28,7 @@ exclude-labels:
 template: |
   <details>
   <summary><b>Changes</b></summary>
+
   $CHANGES
+
   </details>
