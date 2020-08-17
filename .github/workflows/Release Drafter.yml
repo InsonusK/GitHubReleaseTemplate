@@ -24,8 +24,6 @@ jobs:
           file=`cat src/SomeAwesomeProject/SomeAwesomeProject.csproj`
           version=$(grep -oPm1 "(?<=<PackageVersion>)[^<]+" <<< $file)
           echo $version
-      - name: "Save version as enviroment"
-        run: |
           echo '::set-env name=VERSION::'${version}
       - name: "Print current version"
         run: |
