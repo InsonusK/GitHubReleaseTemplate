@@ -12,7 +12,7 @@ jobs:
           echo "is draft ${{ github.event.release.draft }}"
           echo "tag: ${{ github.event.release.tag_name }}"
   check_draft:
-    if: ${{ github.event.release.draft == 'true' }}
+    if: ${{ github.event.release.draft == 'true' && github.event.release.tag_name != *"-a" }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
