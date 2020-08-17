@@ -12,5 +12,21 @@ jobs:
     steps:
       # Drafts your next Release notes as Pull Requests are merged into "master"
       - uses: release-drafter/release-drafter@v5
+        id: release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: "Print new release version"
+        run: |
+          echo ${{ steps.release.outputs.code }}
+      - uses: actions/checkout@v2
+      - name: "Get current version of package"
+        run: |
+          file=`cat src/SomeAwesomeProject/SomeAwesomeProject.csproj`
+          version=$(grep -oPm1 "(?<=<PackageVersion>)[^<]+" <<< $file)
+          echo $version
+      - name: "Save version as enviroment"
+        run: |
+          echo ::set-env name=VERSION::$version
+      - name: "Print current version"
+        run: |
+          echo ${{ env.VERSION }}
