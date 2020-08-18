@@ -17,6 +17,10 @@ jobs:
         with:
           a: ${{ github.event.pull_request.head.ref }}
           b: "release"
+      - name: Dump steps context
+        env:
+          STEPS_CONTEXT: ${{ toJson(steps) }}
+        run: echo "$STEPS_CONTEXT"
       - name: "Check equal result"
         run: |
           if [[ "${{ steps.head_branch.outputs.result }}" != "true" ]];
