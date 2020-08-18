@@ -13,9 +13,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: Thog/action-equals@v1
+        id: head_branch
         with:
           a: ${{ github.event.pull_request.head.ref }}
           b: "release"
+      - name: "Check equal result"
+        run: |
+          if [[ ${{ steps.head_branch.outputs.result }} != "true" ]];
+          then
+            echo "Wrong head branch, should be release"
+            exit 4
+          fi
   Check_version:
     needs: Check_source_branch
     name: "Check version"
@@ -37,8 +45,14 @@ jobs:
       - name: "Print current version"
         run: |
           echo "${{ env.VERSION }}"
-
       - uses: Thog/action-equals@v1
         with:
           a: ${{ env.VERSION }}
           b: ${{ steps.last_release.outputs.release }}
+      - name: "Check equal result"
+        run: |
+          if [[ ${{ steps.head_branch.outputs.result }} != "true" ]];
+          then
+            echo "Drawft release doesn't equal project version"
+            exit 4
+          fi
