@@ -4,7 +4,7 @@ on:
   push:
     # branches to consider in the event; optional, defaults to all
     branches:
-      - master
+      - release
 
 jobs:
   update_release_draft:
@@ -24,14 +24,4 @@ jobs:
       - name: "Print new release version(env)"
         run: |
           echo "${{ env.DRAFT_VERSION }}"
-      - uses: actions/checkout@v2
-      - name: "Get current version of package"
-        run: |
-          file=`cat src/SomeAwesomeProject/SomeAwesomeProject.csproj`
-          version=$(grep -oPm1 "(?<=<PackageVersion>)[^<]+" <<< $file)
-          echo $version
-          echo '::set-env name=VERSION::'${version}
-      - name: "Print current version"
-        run: |
-          echo "${{ env.VERSION }}"
 

@@ -1,0 +1,44 @@
+name: PR code to master
+
+on:
+  pull_request:
+    branches: master
+    types: [opened, synchronize, reopened, labeled]
+    paths:
+      - 'src/**'
+
+jobs:
+  Check_source_branch:
+    name: "Check head branch should be release"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: Thog/action-equals@v1
+        with:
+          a: ${{ github.event.pull_request.head.ref }}
+          b: "release"
+  Check_version:
+    needs: Check_source_branch
+    name: "Check version"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: "Get last release tag"
+        id: last_release
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          repository: InsonusK/GitHubReleaseTemplate
+      - name: "Get current version of package"
+        run: |
+          file=`cat src/SomeAwesomeProject/SomeAwesomeProject.csproj`
+          version=$(grep -oPm1 "(?<=<PackageVersion>)[^<]+" <<< $file)
+          version=v${version}
+          echo $version
+          echo '::set-env name=VERSION::'${version}
+      - name: "Print current version"
+        run: |
+          echo "${{ env.VERSION }}"
+
+      - uses: Thog/action-equals@v1
+        with:
+          a: ${{ env.VERSION }}
+          b: ${{ steps.last_release.outputs.release }}
