@@ -1,21 +1,20 @@
-name: Try publish release
+name: Release package to nuget
+
 on:
-  release:
-    types: edited
+  push:
+    # branches to consider in the event; optional, defaults to all
+    branches:
+      - master
 
 jobs:
-  print_info:
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Release info print"
-        run: |
-          echo "is draft ${{ github.event.release.draft }}"
-          echo "tag: ${{ github.event.release.tag_name }}"
-  check_draft:
-    if: ${{ github.event.release.draft == 'true' && github.event.release.tag_name != *"-a" }}
+  check_version:
+    name: "Check version"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: "Get last release tag"
+        id: last_release
+        uses: pozetroninc/github-action-get-latest-release@master
       - name: "Get current version of package"
         run: |
           file=`cat src/SomeAwesomeProject/SomeAwesomeProject.csproj`
@@ -26,12 +25,13 @@ jobs:
       - name: "Print current version"
         run: |
           echo "${{ env.VERSION }}"
+
       - uses: Thog/action-equals@v1
         with:
           a: ${{ env.VERSION }}
-          b: ${{ github.event.release.tag_name }}
+          b: ${{ steps.last_release.outputs.release }}
   build:
-    needs: check_draft
+    needs: check_version
     runs-on: ubuntu-latest
 
     defaults:
@@ -79,5 +79,17 @@ jobs:
         run: dotnet nuget add source https://nuget.pkg.github.com/${{github.repository_owner}}/index.json --name github --username ${{github.repository_owner}} --password ${{secrets.GITHUB_TOKEN}} --store-password-in-clear-text
       - name: Push with dotnet
         run: dotnet nuget push nuget-packages/*.nupkg --source github --no-symbols true --skip-duplicate
+
+  release:
+    runs-on: ubuntu-latest
+    needs: push
+    steps:
+      # Drafts your next Release notes as Pull Requests are merged into "master"
+      - uses: release-drafter/release-drafter@v5
+        id: release
+        with:
+          publish: 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
