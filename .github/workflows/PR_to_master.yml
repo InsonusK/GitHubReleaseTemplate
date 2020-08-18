@@ -14,6 +14,8 @@ jobs:
       - name: "Get last release tag"
         id: last_release
         uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          repository: InsonusK/GitHubReleaseTemplate
       - name: "Get current version of package"
         run: |
           file=`cat src/SomeAwesomeProject/SomeAwesomeProject.csproj`
