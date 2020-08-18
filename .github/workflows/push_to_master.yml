@@ -34,6 +34,13 @@ jobs:
         with:
           a: ${{ env.VERSION }}
           b: ${{ steps.last_release.outputs.release }}
+      - name: "Check equal result"
+        run: |
+          if [[ ${{ steps.head_branch.outputs.result }} != "true" ]];
+          then
+            echo "Wrong head branch, should be release"
+            exit 4
+          fi
   build:
     needs: check_version
     runs-on: ubuntu-latest
