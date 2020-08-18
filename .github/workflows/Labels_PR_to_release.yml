@@ -1,8 +1,8 @@
-name: Check labels of PR to master
+name: Check labels of PR to release or master
 
 on:
   pull_request:
-    branches: master
+    branches: [release, master]
     types: [opened, synchronize, reopened, labeled]
 
 jobs:
