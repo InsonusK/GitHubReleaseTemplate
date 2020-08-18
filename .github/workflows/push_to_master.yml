@@ -36,7 +36,7 @@ jobs:
           b: ${{ steps.last_release.outputs.release }}
       - name: "Check equal result"
         run: |
-          if [[ ${{ steps.head_branch.outputs.result }} != "true" ]];
+          if [[ "${{ steps.head_branch.outputs.result }}" != "true" ]];
           then
             echo "Wrong head branch, should be release"
             exit 4
