@@ -16,13 +16,13 @@ jobs:
           filters: |
             code:
               - 'src/**'
-      - if: steps.filter.outputs.code == "true"
+      - if: steps.filter.outputs.code == 'true'
         uses: Thog/action-equals@v1
         id: head_branch
         with:
           a: ${{ github.event.pull_request.head.ref }}
           b: "release"
-      - if: steps.filter.outputs.code == "true"
+      - if: steps.filter.outputs.code == 'true'
         name: "Check equal result"
         run: |
           if [[ "${{ steps.head_branch.outputs.result }}" != "true" ]];
@@ -30,7 +30,7 @@ jobs:
             echo "Wrong head branch, should be release"
             exit 4
           fi
-      - if: steps.filter.outputs.code == "false"
+      - if: steps.filter.outputs.code == 'false'
         name: "Feedback changes doesn't contain code"
         run: echo "Changes doesn't contain code"
   Check_version:
