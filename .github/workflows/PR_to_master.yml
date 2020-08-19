@@ -16,13 +16,13 @@ jobs:
           filters: |
             code:
               - 'src/**'
-      - if: steps.filter.outputs.code == "true"
+      - if: steps.filter.outputs.code == 'true'
         uses: Thog/action-equals@v1
         id: head_branch
         with:
           a: ${{ github.event.pull_request.head.ref }}
           b: "release"
-      - if: steps.filter.outputs.code == "true"
+      - if: steps.filter.outputs.code == 'true'
         name: "Check equal result"
         run: |
           if [[ "${{ steps.head_branch.outputs.result }}" != "true" ]];
@@ -30,36 +30,47 @@ jobs:
             echo "Wrong head branch, should be release"
             exit 4
           fi
-      - if: steps.filter.outputs.code == "false"
+      - if: steps.filter.outputs.code == 'false'
         name: "Feedback changes doesn't contain code"
         run: echo "Changes doesn't contain code"
   Check_version:
-    needs: Check_source_branch
-    name: "Check version"
+    name: "If changes contain code: check version "
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: "Get last release tag"
+      - uses: dorny/paths-filter@v2.2.0
+        id: filter
+        with:
+          filters: |
+            code:
+              - 'src/**'
+      - if: steps.filter.outputs.code == 'true'
+        uses: actions/checkout@v2
+      - if: steps.filter.outputs.code == 'true'
+        name: "Get last release tag"
         id: last_release
         uses: pozetroninc/github-action-get-latest-release@master
         with:
           repository: InsonusK/GitHubReleaseTemplate
-      - name: "Get current version of package"
+      - if: steps.filter.outputs.code == 'true'
+        name: "Get current version of package"
         run: |
           file=`cat src/SomeAwesomeProject/SomeAwesomeProject.csproj`
           version=$(grep -oPm1 "(?<=<PackageVersion>)[^<]+" <<< $file)
           version=v${version}
           echo $version
           echo '::set-env name=VERSION::'${version}
-      - name: "Print current version"
+      - if: steps.filter.outputs.code == 'true'
+        name: "Print current version"
         run: |
           echo "${{ env.VERSION }}"
-      - uses: Thog/action-equals@v1
+      - if: steps.filter.outputs.code == 'true'
+        uses: Thog/action-equals@v1
         id: version_compare
         with:
           a: ${{ env.VERSION }}
           b: ${{ steps.last_release.outputs.release }}
-      - name: "Check equal result"
+      - if: steps.filter.outputs.code == 'true'
+        name: "Check equal result"
         run: |
           if [[ "${{ steps.version_compare.outputs.result }}" != "true" ]];
           then
