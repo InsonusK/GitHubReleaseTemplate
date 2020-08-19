@@ -4,11 +4,24 @@ on:
   pull_request:
     branches: master
     types: [opened, synchronize, reopened, labeled]
-    paths:
-      - 'src/**'
 
 jobs:
+  Check_is_code_changed:
+    name: "Check if PR contain code changing"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dorny/paths-filter@v2.2.0
+        id: filter
+        with:
+          filters: |
+            code:
+              - 'src/**'
+      - name: "Save result to env"
+        run: |
+          res="${{ steps.filter.outputs.code }}"
+          echo '::set-env name=IS_CODE_CHANGED::'${res}
   Check_source_branch:
+    if: env.IS_CODE_CHANGED == "true"
     name: "Check head branch should be release"
     runs-on: ubuntu-latest
     steps:
@@ -16,7 +29,7 @@ jobs:
         id: head_branch
         with:
           a: ${{ github.event.pull_request.head.ref }}
-          b: "develop"
+          b: "release"
       - name: Dump steps context
         env:
           STEPS_CONTEXT: ${{ toJson(steps) }}
@@ -29,6 +42,7 @@ jobs:
             exit 4
           fi
   Check_version:
+    if: env.IS_CODE_CHANGED == "true"
     needs: Check_source_branch
     name: "Check version"
     runs-on: ubuntu-latest
