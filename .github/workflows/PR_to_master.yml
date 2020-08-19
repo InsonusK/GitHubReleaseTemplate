@@ -16,7 +16,7 @@ jobs:
         id: head_branch
         with:
           a: ${{ github.event.pull_request.head.ref }}
-          b: "develop"
+          b: "release"
       - name: Dump steps context
         env:
           STEPS_CONTEXT: ${{ toJson(steps) }}
