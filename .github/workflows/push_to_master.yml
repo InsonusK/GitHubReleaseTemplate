@@ -31,12 +31,13 @@ jobs:
           echo "${{ env.VERSION }}"
 
       - uses: Thog/action-equals@v1
+        id: version_compare
         with:
           a: ${{ env.VERSION }}
           b: ${{ steps.last_release.outputs.release }}
       - name: "Check equal result"
         run: |
-          if [[ "${{ steps.head_branch.outputs.result }}" != "true" ]];
+          if [[ "${{ steps.version_compare.outputs.result }}" != "true" ]];
           then
             echo "Wrong head branch, should be release"
             exit 4
