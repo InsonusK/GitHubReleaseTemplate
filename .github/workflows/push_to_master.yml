@@ -16,9 +16,11 @@ jobs:
       - uses: actions/checkout@v2
       - name: "Get last release tag"
         id: last_release
-        uses: pozetroninc/github-action-get-latest-release@master
+        uses: InsonusK/get-latest-release@v1.0
         with:
-          repository: InsonusK/GitHubReleaseTemplate
+          myToken: ${{ github.token }}
+          exclude_types: "prerelease|release"
+          view_top: 10
       - name: "Get current version of package"
         run: |
           file=`cat src/SomeAwesomeProject/SomeAwesomeProject.csproj`
@@ -29,19 +31,10 @@ jobs:
       - name: "Print current version"
         run: |
           echo "${{ env.VERSION }}"
-
-      - uses: Thog/action-equals@v1
-        id: version_compare
-        with:
-          a: ${{ env.VERSION }}
-          b: ${{ steps.last_release.outputs.release }}
-      - name: "Check equal result"
-        run: |
-          if [[ "${{ steps.version_compare.outputs.result }}" != "true" ]];
-          then
-            echo "Wrong head branch, should be release"
-            exit 4
-          fi
+      - if: env.VERSION != steps.last_release.outputs.tag_name
+        run:
+          echo "Drawft release version doesn't equal project version"
+          exit 4
   build:
     needs: check_version
     runs-on: ubuntu-latest
