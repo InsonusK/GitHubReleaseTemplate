@@ -61,6 +61,6 @@ jobs:
         run: |
           echo "${{ env.VERSION }}"
       - if: steps.filter.outputs.code == 'true' && env.VERSION != steps.last_release.outputs.tag_name
-        run:
+        run: |
           echo "Drawft release version doesn't equal project version"
           exit 4
