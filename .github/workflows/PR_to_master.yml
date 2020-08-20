@@ -21,7 +21,7 @@ jobs:
         run: |
           echo "Pull requests with code changes should come from release branch"
           exit 4
-      - if: !${{ success() }}
+      - if: ${{ !success() }}
         name: "Check passed"
         run: echo "Check passed"
   Check_version:
@@ -37,9 +37,9 @@ jobs:
       - if: steps.filter.outputs.code == 'false'
         name: "Log that there is no code changes"
         run: echo "Changes does not contain code"
-      - if: !${{ success() }}
+      - if: !${{ !success() }}
         uses: actions/checkout@v2
-      - if: ${{ success() }}
+      - if: ${{ !success() }}
         name: "Get last release tag"
         id: last_release
         uses: InsonusK/get-latest-release@v1.0
@@ -47,7 +47,7 @@ jobs:
           myToken: ${{ github.token }}
           exclude_types: "prerelease|release"
           view_top: 10
-      - if: ${{ success() }}
+      - if: ${{ !success() }}
         name: "Get current version of package"
         run: |
           file=`cat src/SomeAwesomeProject/SomeAwesomeProject.csproj`
@@ -55,7 +55,7 @@ jobs:
           version=v${version}
           echo $version
           echo '::set-env name=VERSION::'${version}
-      - if: ${{ success() }}
+      - if: ${{ !success() }}
         name: "Print current version"
         run: |
           echo "${{ env.VERSION }}"
