@@ -36,10 +36,11 @@ jobs:
               - 'src/**'
       - if: steps.filter.outputs.code == 'false'
         name: "Log that there is no code changes"
-        run: echo "Changes does not contain code"
-      - if: ${{ !success() }}
-        uses: actions/checkout@v2
-      - if: ${{ success() }}
+        run: |
+          echo "Changes does not contain code"
+          exit 0
+      - uses: actions/checkout@v2
+      - if: steps.filter.outputs.code == 'true'
         name: "Get last release tag"
         id: last_release
         uses: InsonusK/get-latest-release@v1.0
@@ -47,7 +48,7 @@ jobs:
           myToken: ${{ github.token }}
           exclude_types: "prerelease|release"
           view_top: 10
-      - if: ${{ success() }}
+      - if: steps.filter.outputs.code == 'true'
         name: "Get current version of package"
         run: |
           file=`cat src/SomeAwesomeProject/SomeAwesomeProject.csproj`
@@ -55,11 +56,11 @@ jobs:
           version=v${version}
           echo $version
           echo '::set-env name=VERSION::'${version}
-      - if: ${{ success() }}
+      - if: steps.filter.outputs.code == 'true'
         name: "Print current version"
         run: |
           echo "${{ env.VERSION }}"
-      - if: env.VERSION != steps.last_release.outputs.tag_name
+      - if: steps.filter.outputs.code == 'true' && env.VERSION != steps.last_release.outputs.tag_name
         run:
           echo "Drawft release version doesn't equal project version"
           exit 4
