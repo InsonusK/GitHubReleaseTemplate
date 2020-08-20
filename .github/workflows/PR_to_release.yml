@@ -2,7 +2,7 @@ name: Check labels of PR to release or master
 
 on:
   pull_request:
-    branches: [release, master]
+    branches: [release]
     types: [opened, synchronize, reopened, labeled]
 
 jobs:
@@ -17,20 +17,6 @@ jobs:
           filters: |
             code:
               - 'src/**'
-            non_code:
-              - '!src/**'
-      - name: Throw error changed folders doesn't defined
-        if: steps.filter.outputs.code == 'false' && steps.filter.outputs.non_code == 'false'
-        run: |
-          echo "Changed folders doesn't defined"
-          exit 4
-      - name: Check devops label setted for non code changes
-        if: steps.filter.outputs.non_code == 'true'
-        uses: mheap/github-action-required-labels@v1
-        with:
-          mode: exactly
-          count: 1
-          labels: "devops"
       - name: Check code label setted for code changes
         if: steps.filter.outputs.code == 'true'
         uses: mheap/github-action-required-labels@v1

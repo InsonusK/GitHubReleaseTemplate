@@ -7,7 +7,7 @@ on:
 
 jobs:
   Check_source_branch:
-    name: "Check does changes contain code"
+    name: "Check PR to master branch with code changes should come from release branch"
     runs-on: ubuntu-latest
     steps:
       - uses: dorny/paths-filter@v2.2.0
@@ -16,25 +16,16 @@ jobs:
           filters: |
             code:
               - 'src/**'
-      - if: steps.filter.outputs.code == 'true'
-        uses: Thog/action-equals@v1
-        id: head_branch
-        with:
-          a: ${{ github.event.pull_request.head.ref }}
-          b: "release"
-      - if: steps.filter.outputs.code == 'true'
-        name: "Check equal result"
+      - if: steps.filter.outputs.code == 'true' && github.event.pull_request.head.ref != 'release'
+        name: "Throw error if PR contain code changes but not from release branch"
         run: |
-          if [[ "${{ steps.head_branch.outputs.result }}" != "true" ]];
-          then
-            echo "Wrong head branch, should be release"
-            exit 4
-          fi
-      - if: steps.filter.outputs.code == 'false'
-        name: "Feedback changes doesn't contain code"
-        run: echo "Changes doesn't contain code"
+          echo "Pull requests with code changes should come from release branch"
+          exit 4
+      - if: ${{ !success() }}
+        name: "Check passed"
+        run: echo "Check passed"
   Check_version:
-    name: "If changes contain code: check version "
+    name: "If PR to master contain code changes: check version "
     runs-on: ubuntu-latest
     steps:
       - uses: dorny/paths-filter@v2.2.0
@@ -43,14 +34,20 @@ jobs:
           filters: |
             code:
               - 'src/**'
-      - if: steps.filter.outputs.code == 'true'
-        uses: actions/checkout@v2
+      - if: steps.filter.outputs.code == 'false'
+        name: "Log that there is no code changes"
+        run: |
+          echo "Changes does not contain code"
+          exit 0
+      - uses: actions/checkout@v2
       - if: steps.filter.outputs.code == 'true'
         name: "Get last release tag"
         id: last_release
-        uses: pozetroninc/github-action-get-latest-release@master
+        uses: InsonusK/get-latest-release@v1.0
         with:
-          repository: InsonusK/GitHubReleaseTemplate
+          myToken: ${{ github.token }}
+          exclude_types: "prerelease|release"
+          view_top: 10
       - if: steps.filter.outputs.code == 'true'
         name: "Get current version of package"
         run: |
@@ -63,17 +60,7 @@ jobs:
         name: "Print current version"
         run: |
           echo "${{ env.VERSION }}"
-      - if: steps.filter.outputs.code == 'true'
-        uses: Thog/action-equals@v1
-        id: version_compare
-        with:
-          a: ${{ env.VERSION }}
-          b: ${{ steps.last_release.outputs.release }}
-      - if: steps.filter.outputs.code == 'true'
-        name: "Check equal result"
-        run: |
-          if [[ "${{ steps.version_compare.outputs.result }}" != "true" ]];
-          then
-            echo "Drawft release doesn't equal project version"
-            exit 4
-          fi
+      - if: steps.filter.outputs.code == 'true' && env.VERSION != steps.last_release.outputs.tag_name
+        run:
+          echo "Drawft release version doesn't equal project version"
+          exit 4
