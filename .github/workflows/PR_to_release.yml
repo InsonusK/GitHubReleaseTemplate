@@ -1,4 +1,4 @@
-name: Check labels of PR to release or master
+name: Check labels of PR to release
 
 on:
   pull_request:
