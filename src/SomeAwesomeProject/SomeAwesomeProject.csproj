@@ -6,6 +6,8 @@
         <Authors>InsonusK</Authors>
         <PackageProjectUrl>https://github.com/InsonusK/GitHubReleaseTemplate</PackageProjectUrl>
         <RepositoryUrl>https://github.com/InsonusK/GitHubReleaseTemplate</RepositoryUrl>
+        <Description>Test project to develop CD workflow in github</Description>
+        <Title>Test Project</Title>
     </PropertyGroup>
 
 </Project>
