@@ -60,11 +60,7 @@ jobs:
           version=v${version}
           echo $version
           echo '::set-env name=VERSION::'${version}
-      - if: steps.filter.outputs.code == 'true'
-        name: "Print current version"
-        run: |
-          echo "${{ env.VERSION }}"
       - if: steps.filter.outputs.code == 'true' && env.VERSION != steps.last_release.outputs.tag_name
         run: |
-          echo "Drawft release version doesn't equal project version"
+          echo "Drawft release (${{ steps.last_release.outputs.tag_name }}) version doesn't equal project version (${{ env.VERSION }})"
           exit 4
