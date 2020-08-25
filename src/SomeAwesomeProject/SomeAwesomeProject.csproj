@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
-        <PackageVersion>1.1.0</PackageVersion>
+        <PackageVersion>1.1.1</PackageVersion>
         <Authors>InsonusK</Authors>
         <PackageProjectUrl>https://github.com/InsonusK/GitHubReleaseTemplate</PackageProjectUrl>
         <RepositoryUrl>https://github.com/InsonusK/GitHubReleaseTemplate</RepositoryUrl>
