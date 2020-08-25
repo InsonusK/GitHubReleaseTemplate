@@ -19,7 +19,7 @@ jobs:
           # inline YAML or path to separate file (e.g.: .github/filters.yaml)
           filters: |
             code:
-              - ${{ code_path }}
+              - ${{ env.code_path }}
       - name: Check code label setted for code changes
         if: steps.filter.outputs.code == 'true'
         uses: mheap/github-action-required-labels@v1

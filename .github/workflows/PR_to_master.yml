@@ -5,6 +5,10 @@ on:
     branches: master
     types: [opened, synchronize, reopened, labeled]
 
+env:
+  code_path: 'src/**'
+  project_path: 'src/SomeAwesomeProject/SomeAwesomeProject.csproj'
+
 jobs:
   Check_source_branch:
     name: "Check PR to master branch with code changes should come from release branch"
@@ -15,7 +19,7 @@ jobs:
         with:
           filters: |
             code:
-              - 'src/**'
+              - ${{ env.code_path }}
       - if: steps.filter.outputs.code == 'true' && github.event.pull_request.head.ref != 'release'
         name: "Throw error if PR contain code changes but not from release branch"
         run: |
@@ -33,7 +37,7 @@ jobs:
         with:
           filters: |
             code:
-              - 'src/**'
+              - ${{ env.code_path }}
       - if: steps.filter.outputs.code == 'false'
         name: "Log that there is no code changes"
         run: |
@@ -51,7 +55,7 @@ jobs:
       - if: steps.filter.outputs.code == 'true'
         name: "Get current version of package"
         run: |
-          file=`cat src/SomeAwesomeProject/SomeAwesomeProject.csproj`
+          file=`cat ${{ env.project_path }}`
           version=$(grep -oPm1 "(?<=<PackageVersion>)[^<]+" <<< $file)
           version=v${version}
           echo $version
