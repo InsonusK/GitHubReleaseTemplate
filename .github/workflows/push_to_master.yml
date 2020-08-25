@@ -26,7 +26,7 @@ jobs:
           view_top: 10
       - name: "Get current version of package"
         run: |
-          file=`cat ${{ project_path }}`
+          file=`cat ${{ env.project_path }}`
           version=$(grep -oPm1 "(?<=<PackageVersion>)[^<]+" <<< $file)
           version=v${version}
           echo $version
@@ -51,7 +51,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Pack with dotnet
-        run: dotnet pack ${{ project_path }} --output nuget-packages --configuration Release
+        run: dotnet pack ${{ env.project_path }} --output nuget-packages --configuration Release
       - name: Upload nupkg
         uses: actions/upload-artifact@v2
         with:

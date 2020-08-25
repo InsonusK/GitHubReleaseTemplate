@@ -19,7 +19,7 @@ jobs:
         with:
           filters: |
             code:
-              - ${{ code_path }}
+              - ${{ env.code_path }}
       - if: steps.filter.outputs.code == 'true' && github.event.pull_request.head.ref != 'release'
         name: "Throw error if PR contain code changes but not from release branch"
         run: |
@@ -37,7 +37,7 @@ jobs:
         with:
           filters: |
             code:
-              - ${{ code_path }}
+              - ${{ env.code_path }}
       - if: steps.filter.outputs.code == 'false'
         name: "Log that there is no code changes"
         run: |
@@ -55,7 +55,7 @@ jobs:
       - if: steps.filter.outputs.code == 'true'
         name: "Get current version of package"
         run: |
-          file=`cat ${{ project_path }}`
+          file=`cat ${{ env.project_path }}`
           version=$(grep -oPm1 "(?<=<PackageVersion>)[^<]+" <<< $file)
           version=v${version}
           echo $version
