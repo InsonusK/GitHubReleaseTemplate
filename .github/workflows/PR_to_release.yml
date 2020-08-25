@@ -5,6 +5,9 @@ on:
     branches: [release]
     types: [opened, synchronize, reopened, labeled]
 
+env:
+  code_path: 'src/**'
+
 jobs:
   label:
     name: "Check labels"
@@ -16,7 +19,7 @@ jobs:
           # inline YAML or path to separate file (e.g.: .github/filters.yaml)
           filters: |
             code:
-              - 'src/**'
+              - ${{ code_path }}
       - name: Check code label setted for code changes
         if: steps.filter.outputs.code == 'true'
         uses: mheap/github-action-required-labels@v1
