@@ -14,7 +14,7 @@ env:
 
 jobs:
   Check_source_branch:
-    name: "Check PR to master branch with code changes should come from release branch"
+    name: "Check head branch to master branch"
     runs-on: ubuntu-latest
     steps:
       - uses: dorny/paths-filter@v2.2.0
