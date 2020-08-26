@@ -47,7 +47,7 @@ jobs:
       - if: steps.filter.outputs.code == 'true'
         name: "Get last release tag"
         id: last_release
-        uses: InsonusK/get-latest-release@v1.0
+        uses: InsonusK/get-latest-release@v1.0.1
         with:
           myToken: ${{ github.token }}
           exclude_types: "prerelease|release"
