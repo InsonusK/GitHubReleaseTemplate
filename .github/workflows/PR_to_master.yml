@@ -7,11 +7,14 @@ on:
 
 env:
   code_path: 'src/**'
+  release_branch: 'release'
+  devops_path: '.github/**'
+  devops_branch: 'devops'
   project_path: 'src/SomeAwesomeProject/SomeAwesomeProject.csproj'
 
 jobs:
   Check_source_branch:
-    name: "Check PR to master branch with code changes should come from release branch"
+    name: "Check head branch to master branch"
     runs-on: ubuntu-latest
     steps:
       - uses: dorny/paths-filter@v2.2.0
@@ -20,10 +23,17 @@ jobs:
           filters: |
             code:
               - ${{ env.code_path }}
-      - if: steps.filter.outputs.code == 'true' && github.event.pull_request.head.ref != 'release'
+            devops:
+              - ${{ env.devops_path }}
+      - if: steps.filter.outputs.code == 'true' && github.event.pull_request.head.ref != env.release_branch
         name: "Throw error if PR contain code changes but not from release branch"
         run: |
-          echo "Pull requests with code changes should come from release branch"
+          echo "Pull requests with code changes should come from ${{ env.release_branch }} branch"
+          exit 4
+      - if: steps.filter.outputs.devops == 'true' && github.event.pull_request.head.ref != env.devops_branch
+        name: "Throw error if PR contain devops changes but not from devops branch"
+        run: |
+          echo "Pull requests with devops changes should come from ${{ env.devops_branch }} branch"
           exit 4
       - if: ${{ !success() }}
         name: "Check passed"
